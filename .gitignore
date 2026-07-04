@@ -17,6 +17,10 @@ pnpm-debug.log*
 .env
 .env.production
 
+# contains the secret invite code embedded in its URL
+invite-qr.png
+invite-qr.svg
+
 # macOS-specific files
 .DS_Store
 

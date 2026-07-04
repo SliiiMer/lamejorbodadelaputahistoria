@@ -1,6 +1,18 @@
 # Project
 
-Wedding website for Jen & Cristian, deployed at lamejorbodadelaputahistoria.com. Built with Astro.
+Wedding website for Jen & Cristian, deployed at lamejorbodadelaputahistoria.com. Built with Astro,
+static-hosted on GitHub Pages, backed by Supabase for RSVP submissions. All user-facing copy is
+in Spanish; code, comments, and docs stay in English.
+
+## RSVP / invite-code gating
+
+The homepage (`src/pages/index.astro`) shows an RSVP form only to visitors with a valid
+`?invite=` query param. Because this is a static site, the frontend never knows whether the code
+is actually correct — it only checks that *some* code is present, as a cheap UX filter. The real
+enforcement is a Supabase row-level security policy in `supabase/schema.sql` that rejects inserts
+with the wrong `invite_code`. Do not reintroduce a client-side secret comparison (e.g. baking the
+code into a `PUBLIC_*` env var) — anything under `import.meta.env.PUBLIC_*` ships in the built JS
+bundle and is trivially readable by anyone.
 
 ## Development
 

@@ -2,42 +2,300 @@
 import Layout from '../layouts/Layout.astro';
 ---
 
-<Layout>
+<Layout noindex>
 	<main>
-		<span id="castle" aria-hidden="true">🏰</span>
-		<h1>Jen &amp; Cristian</h1>
-		<p>Ya queda poco para que el sueño se haga realidad</p>
+		<p id="gate-message" hidden>
+			Este enlace no es válido. Por favor, accede desde el código QR de tu invitación.
+		</p>
+
+		<div id="rsvp-content" hidden>
+			<span id="castle" aria-hidden="true">🏰</span>
+			<h1>Confirma tu asistencia</h1>
+
+			<p class="intro">
+				Ayúdanos a preparar el gran banquete. Cuéntanos quién vendrá contigo al castillo.
+			</p>
+
+			<form id="rsvp-form">
+				<label>
+					Tu nombre
+					<input type="text" name="name" required />
+				</label>
+
+				<fieldset>
+					<legend>¿Asistirás?</legend>
+					<label class="radio">
+						<input type="radio" name="attending" value="true" required /> Sí, allí estaré
+					</label>
+					<label class="radio">
+						<input type="radio" name="attending" value="false" /> No podré ir
+					</label>
+				</fieldset>
+
+				<label>
+					Alergia o intolerancia
+					<input type="text" name="allergy" required />
+				</label>
+
+				<div id="guests"></div>
+
+				<button type="button" id="add-guest">+ Añadir acompañante</button>
+
+				<label>
+					Comentarios generales
+					<textarea name="comments" rows="3" placeholder="Alguna canción que no puede faltar, algo que debamos saber..."
+					></textarea>
+				</label>
+
+				<button type="submit" id="submit-button">Enviar confirmación</button>
+
+				<p id="form-status" role="status"></p>
+			</form>
+		</div>
 	</main>
 </Layout>
 
+<template id="guest-row-template">
+	<div class="guest-row">
+		<label>
+			Nombre del acompañante
+			<input type="text" class="guest-name" required />
+		</label>
+		<label>
+			Alergia o intolerancia
+			<input type="text" class="guest-allergy" placeholder="Ninguna" />
+		</label>
+		<button type="button" class="remove-guest" aria-label="Quitar acompañante">✕</button>
+	</div>
+</template>
+
+<script>
+	import { supabase } from '../lib/supabase';
+
+	// The real gate lives in the Supabase RLS policy (see supabase/schema.sql), which
+	// checks invite_code server-side. We never know here whether the code is right —
+	// only Supabase does — so this is just a cheap UX filter for obviously bare visits.
+	const inviteCode = new URLSearchParams(window.location.search).get('invite');
+	const hasInviteCode = Boolean(inviteCode);
+
+	const gateMessage = document.querySelector<HTMLParagraphElement>('#gate-message')!;
+	const rsvpContent = document.querySelector<HTMLDivElement>('#rsvp-content')!;
+	const guestsContainer = document.querySelector<HTMLDivElement>('#guests')!;
+	const guestTemplate = document.querySelector<HTMLTemplateElement>('#guest-row-template')!;
+	const addGuestButton = document.querySelector<HTMLButtonElement>('#add-guest')!;
+	const form = document.querySelector<HTMLFormElement>('#rsvp-form')!;
+	const submitButton = document.querySelector<HTMLButtonElement>('#submit-button')!;
+	const statusEl = document.querySelector<HTMLParagraphElement>('#form-status')!;
+
+	if (hasInviteCode) {
+		rsvpContent.hidden = false;
+	} else {
+		gateMessage.hidden = false;
+	}
+
+	function addGuestRow() {
+		const fragment = guestTemplate.content.cloneNode(true) as DocumentFragment;
+		const row = fragment.querySelector<HTMLDivElement>('.guest-row')!;
+		row.querySelector<HTMLButtonElement>('.remove-guest')!.addEventListener('click', () => {
+			row.remove();
+		});
+		guestsContainer.appendChild(row);
+	}
+
+	addGuestButton.addEventListener('click', addGuestRow);
+
+	form.addEventListener('submit', async (event) => {
+		event.preventDefault();
+		statusEl.textContent = '';
+		submitButton.disabled = true;
+
+		const formData = new FormData(form);
+		const name = String(formData.get('name') ?? '').trim();
+		const attending = formData.get('attending') === 'true';
+		const allergy = String(formData.get('allergy') ?? '').trim();
+		const comments = String(formData.get('comments') ?? '').trim();
+
+		const guests = Array.from(guestsContainer.querySelectorAll<HTMLDivElement>('.guest-row'))
+			.map((row) => ({
+				name: row.querySelector<HTMLInputElement>('.guest-name')!.value.trim(),
+				allergy: row.querySelector<HTMLInputElement>('.guest-allergy')!.value.trim(),
+			}))
+			.filter((guest) => guest.name.length > 0);
+
+		const { error } = await supabase.from('rsvps').insert({
+			name,
+			attending,
+			allergy,
+			guests,
+			comments: comments || null,
+			invite_code: inviteCode,
+		});
+
+		if (error) {
+			// Postgres error 42501 = row-level security policy violation, i.e. a
+			// missing or incorrect invite code rather than a transient failure.
+			statusEl.textContent =
+				error.code === '42501'
+					? 'Este enlace no es válido. Por favor, accede desde el código QR de tu invitación.'
+					: 'Algo ha ido mal. Por favor, inténtalo de nuevo.';
+			statusEl.className = 'error';
+		} else {
+			statusEl.textContent = '¡Gracias! Tu confirmación ha sido recibida.';
+			statusEl.className = 'success';
+			form.reset();
+			guestsContainer.replaceChildren();
+		}
+
+		submitButton.disabled = false;
+	});
+</script>
+
 <style>
 	main {
-		height: 100%;
+		min-height: 100%;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		justify-content: center;
 		text-align: center;
 		font-family: Georgia, 'Times New Roman', serif;
 		gap: 1rem;
+		padding: 2rem 1rem 4rem;
 		background: linear-gradient(180deg, #c2c197 0%, #4a3a5c 100%);
 		color: #f2e9d8;
 	}
 
+	#gate-message {
+		max-width: 32rem;
+		color: #d8c9a3;
+	}
+
+	#rsvp-content {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 1rem;
+	}
+
+	#rsvp-content[hidden] {
+		display: none;
+	}
+
 	#castle {
-		font-size: 5rem;
+		font-size: 4rem;
 		line-height: 1;
 	}
 
 	h1 {
-		font-size: 2.5rem;
+		font-size: 2rem;
 		margin: 0;
 		letter-spacing: 0.05em;
 	}
 
-	p {
-		font-size: 1.1rem;
+	.intro {
+		max-width: 32rem;
 		color: #d8c9a3;
-		margin: 0;
+	}
+
+	form {
+		width: 100%;
+		max-width: 32rem;
+		display: flex;
+		flex-direction: column;
+		gap: 1.25rem;
+		text-align: left;
+		background: rgba(0, 0, 0, 0.2);
+		border: 1px solid rgba(242, 233, 216, 0.3);
+		border-radius: 12px;
+		padding: 1.5rem;
+	}
+
+	label {
+		display: flex;
+		flex-direction: column;
+		gap: 0.4rem;
+		font-size: 0.95rem;
+	}
+
+	label.radio {
+		flex-direction: row;
+		align-items: center;
+		gap: 0.5rem;
+	}
+
+	input[type='text'],
+	textarea {
+		font-family: inherit;
+		font-size: 1rem;
+		padding: 0.5rem 0.6rem;
+		border-radius: 6px;
+		border: 1px solid rgba(242, 233, 216, 0.4);
+		background: rgba(242, 233, 216, 0.95);
+		color: #2b2440;
+	}
+
+	fieldset {
+		border: 1px solid rgba(242, 233, 216, 0.3);
+		border-radius: 8px;
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+		padding: 0.75rem 1rem;
+	}
+
+	legend {
+		padding: 0 0.4rem;
+	}
+
+	.guest-row {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: flex-end;
+		gap: 0.75rem;
+		border-top: 1px dashed rgba(242, 233, 216, 0.3);
+		padding-top: 0.75rem;
+	}
+
+	.guest-row label {
+		flex: 1 1 10rem;
+	}
+
+	.remove-guest {
+		background: transparent;
+		border: 1px solid rgba(242, 233, 216, 0.4);
+		color: #f2e9d8;
+		border-radius: 6px;
+		cursor: pointer;
+		padding: 0.5rem 0.7rem;
+	}
+
+	button[type='button'],
+	button[type='submit'] {
+		font-family: inherit;
+		font-size: 1rem;
+		cursor: pointer;
+		border-radius: 8px;
+		border: 1px solid rgba(242, 233, 216, 0.4);
+		padding: 0.6rem 1rem;
+		background: transparent;
+		color: #f2e9d8;
+	}
+
+	button[type='submit'] {
+		background: #6c4f8c;
+		border-color: #6c4f8c;
+		font-weight: bold;
+	}
+
+	button:disabled {
+		opacity: 0.6;
+		cursor: not-allowed;
+	}
+
+	#form-status.success {
+		color: #b7f5c1;
+	}
+
+	#form-status.error {
+		color: #f5b7b7;
 	}
 </style>
