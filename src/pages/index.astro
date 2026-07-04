@@ -1,0 +1,43 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout>
+	<main>
+		<span id="castle" aria-hidden="true">🏰</span>
+		<h1>Jen &amp; Cristian</h1>
+		<p>Ya queda poco para que el sueño se haga realidad</p>
+	</main>
+</Layout>
+
+<style>
+	main {
+		height: 100%;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		text-align: center;
+		font-family: Georgia, 'Times New Roman', serif;
+		gap: 1rem;
+		background: linear-gradient(180deg, #c2c197 0%, #4a3a5c 100%);
+		color: #f2e9d8;
+	}
+
+	#castle {
+		font-size: 5rem;
+		line-height: 1;
+	}
+
+	h1 {
+		font-size: 2.5rem;
+		margin: 0;
+		letter-spacing: 0.05em;
+	}
+
+	p {
+		font-size: 1.1rem;
+		color: #d8c9a3;
+		margin: 0;
+	}
+</style>
