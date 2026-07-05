@@ -8,49 +8,87 @@ import Layout from '../layouts/Layout.astro';
 			Este enlace no es válido. Por favor, accede desde el código QR de tu invitación.
 		</p>
 
-		<div id="rsvp-content" hidden>
-			<span id="castle" aria-hidden="true">🏰</span>
-			<h1>Confirma tu asistencia</h1>
+		<div id="page-content" hidden>
+			<div id="logo" role="img" aria-label="Sello Jen y Cristian"></div>
 
-			<p class="intro">
-				Ayúdanos a preparar el gran banquete. Cuéntanos quién vendrá contigo al castillo.
-			</p>
+			<section class="section" id="location">
+				<div class="section-inner">
+					<h2>Cómo llegar</h2>
 
-			<form id="rsvp-form">
-				<label>
-					Tu nombre
-					<input type="text" name="name" required />
-				</label>
+					<p class="intro">
+						El castillo os espera en Guadamur, Toledo.
+					</p>
 
-				<fieldset>
-					<legend>¿Asistirás?</legend>
-					<label class="radio">
-						<input type="radio" name="attending" value="true" required /> Sí, allí estaré
-					</label>
-					<label class="radio">
-						<input type="radio" name="attending" value="false" /> No podré ir
-					</label>
-				</fieldset>
+					<div class="map-embed">
+						<iframe
+							src="https://www.google.com/maps?q=Castillo+de+Guadamur,+Guadamur,+Toledo&output=embed"
+							loading="lazy"
+							referrerpolicy="no-referrer-when-downgrade"
+							allowfullscreen
+							title="Mapa de ubicación: Castillo de Guadamur"
+						></iframe>
+					</div>
 
-				<label>
-					Alergia o intolerancia
-					<input type="text" name="allergy" required />
-				</label>
+					<a
+						class="map-link"
+						href="https://www.google.com/maps/place/Castillo+de+Guadamur/@39.8102658,-4.1486483,16z/data=!3m1!4b1!4m6!3m5!1s0xd6a73e40785b535:0x9f820262277d045d!8m2!3d39.8102658!4d-4.1460734!16s%2Fg%2F122y5d3d"
+						target="_blank"
+						rel="noopener noreferrer"
+					>
+						Abrir en Google Maps
+					</a>
+				</div>
+			</section>
 
-				<div id="guests"></div>
+			<section class="section" id="rsvp">
+				<div class="section-inner">
+					<h1>Confirma tu asistencia</h1>
 
-				<button type="button" id="add-guest">+ Añadir acompañante</button>
+					<p class="intro">
+						Ayúdanos a preparar el gran banquete. Cuéntanos quién vendrá contigo al castillo.
+					</p>
 
-				<label>
-					Comentarios generales
-					<textarea name="comments" rows="3" placeholder="Alguna canción que no puede faltar, algo que debamos saber..."
-					></textarea>
-				</label>
+					<form id="rsvp-form">
+						<label>
+							Tu nombre
+							<input type="text" name="name" required />
+						</label>
 
-				<button type="submit" id="submit-button">Enviar confirmación</button>
+						<fieldset>
+							<legend>¿Asistirás?</legend>
+							<label class="radio">
+								<input type="radio" name="attending" value="true" required /> Sí, allí estaré
+							</label>
+							<label class="radio">
+								<input type="radio" name="attending" value="false" /> No podré ir
+							</label>
+						</fieldset>
 
-				<p id="form-status" role="status"></p>
-			</form>
+						<label>
+							Alergia o intolerancia
+							<input type="text" name="allergy" required />
+						</label>
+
+						<div id="guests"></div>
+
+						<button type="button" id="add-guest">+ Añadir acompañante</button>
+
+						<label>
+							Comentarios generales
+							<textarea
+								name="comments"
+								rows="3"
+								placeholder="Alguna canción que no puede faltar, algo que debamos saber..."
+							></textarea>
+						</label>
+
+						<button type="submit" id="submit-button">Enviar confirmación</button>
+
+						<p id="form-status" role="status"></p>
+					</form>
+				</div>
+			</section>
+
 		</div>
 	</main>
 </Layout>
@@ -79,7 +117,7 @@ import Layout from '../layouts/Layout.astro';
 	const hasInviteCode = Boolean(inviteCode);
 
 	const gateMessage = document.querySelector<HTMLParagraphElement>('#gate-message')!;
-	const rsvpContent = document.querySelector<HTMLDivElement>('#rsvp-content')!;
+	const pageContent = document.querySelector<HTMLDivElement>('#page-content')!;
 	const guestsContainer = document.querySelector<HTMLDivElement>('#guests')!;
 	const guestTemplate = document.querySelector<HTMLTemplateElement>('#guest-row-template')!;
 	const addGuestButton = document.querySelector<HTMLButtonElement>('#add-guest')!;
@@ -88,7 +126,7 @@ import Layout from '../layouts/Layout.astro';
 	const statusEl = document.querySelector<HTMLParagraphElement>('#form-status')!;
 
 	if (hasInviteCode) {
-		rsvpContent.hidden = false;
+		pageContent.hidden = false;
 	} else {
 		gateMessage.hidden = false;
 	}
@@ -151,49 +189,118 @@ import Layout from '../layouts/Layout.astro';
 </script>
 
 <style>
+	main,
+	main *,
+	main *::before,
+	main *::after {
+		box-sizing: border-box;
+	}
+
 	main {
+		--gold: #b8933f;
+		--red: #7a1220;
+		--black: #161213;
+		--cream: #faf7f0;
+
+		position: relative;
 		min-height: 100%;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
 		text-align: center;
-		font-family: Georgia, 'Times New Roman', serif;
+  		font-family: "Uncial Antiqua", system-ui;
+		font-weight: 400;
+		font-style: normal;
 		gap: 1rem;
 		padding: 2rem 1rem 4rem;
-		background: linear-gradient(180deg, #c2c197 0%, #4a3a5c 100%);
-		color: #f2e9d8;
+		color: var(--black);
+		background-color: var(--cream);
+		overflow: hidden;
+	}
+
+	main::before {
+		content: '';
+		position: absolute;
+		inset: 0;
+		background-image: url('/patterns/harlequin.svg');
+		background-repeat: repeat;
+		background-size: 54px 90px;
+		z-index: 0;
+	}
+
+	#gate-message,
+	#page-content {
+		position: relative;
+		z-index: 1;
 	}
 
 	#gate-message {
 		max-width: 32rem;
-		color: #d8c9a3;
+		color: var(--red);
+		font-weight: 600;
 	}
 
-	#rsvp-content {
+	#page-content {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 1.5rem;
+	}
+
+	#page-content[hidden] {
+		display: none;
+	}
+
+	#logo {
+		width: 12rem;
+		height: 12rem;
+		margin-top: 0.5rem;
+		background-color: var(--gold);
+		-webkit-mask: url('/logo.svg') no-repeat center / contain;
+		mask: url('/logo.svg') no-repeat center / contain;
+	}
+
+	.section {
+		width: 100%;
+		max-width: 38rem;
+		padding: 20px;
+		background-image: url('/patterns/leopard.svg');
+		background-size: 160px 160px;
+		box-shadow: 0 0 0 1px var(--black);
+	}
+
+	.section-inner {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
 		gap: 1rem;
+		background: var(--cream);
+		box-shadow: 0 0 0 1px var(--black);
+		padding: 1.75rem;
 	}
 
-	#rsvp-content[hidden] {
-		display: none;
-	}
-
-	#castle {
-		font-size: 4rem;
-		line-height: 1;
+	h1,
+	h2 {
+		font-family: "Manufacturing Consent", system-ui;
+		font-weight: 400;
+		font-style: normal;
+		margin: 0.25rem 0 0;
+		letter-spacing: 0.03em;
+		color: var(--red);
 	}
 
 	h1 {
-		font-size: 2rem;
-		margin: 0;
-		letter-spacing: 0.05em;
+		font-size: 2.25rem;
+	}
+
+	h2 {
+		font-size: 1.75rem;
 	}
 
 	.intro {
 		max-width: 32rem;
-		color: #d8c9a3;
+		color: var(--black);
+		font-style: italic;
 	}
 
 	form {
@@ -203,9 +310,10 @@ import Layout from '../layouts/Layout.astro';
 		flex-direction: column;
 		gap: 1.25rem;
 		text-align: left;
-		background: rgba(0, 0, 0, 0.2);
-		border: 1px solid rgba(242, 233, 216, 0.3);
-		border-radius: 12px;
+		background: rgba(255, 255, 255, 0.85);
+		border: 2px solid var(--gold);
+		box-shadow: 0 0 0 1px var(--black);
+		border-radius: 4px;
 		padding: 1.5rem;
 	}
 
@@ -227,15 +335,22 @@ import Layout from '../layouts/Layout.astro';
 		font-family: inherit;
 		font-size: 1rem;
 		padding: 0.5rem 0.6rem;
-		border-radius: 6px;
-		border: 1px solid rgba(242, 233, 216, 0.4);
-		background: rgba(242, 233, 216, 0.95);
-		color: #2b2440;
+		border-radius: 4px;
+		border: 1px solid rgba(22, 18, 19, 0.35);
+		background: #fff;
+		color: var(--black);
+	}
+
+	input[type='text']:focus,
+	textarea:focus {
+		outline: none;
+		border-color: var(--gold);
+		box-shadow: 0 0 0 2px rgba(184, 147, 63, 0.35);
 	}
 
 	fieldset {
-		border: 1px solid rgba(242, 233, 216, 0.3);
-		border-radius: 8px;
+		border: 1px solid rgba(22, 18, 19, 0.3);
+		border-radius: 6px;
 		display: flex;
 		flex-direction: column;
 		gap: 0.5rem;
@@ -244,6 +359,7 @@ import Layout from '../layouts/Layout.astro';
 
 	legend {
 		padding: 0 0.4rem;
+		font-weight: 600;
 	}
 
 	.guest-row {
@@ -251,7 +367,7 @@ import Layout from '../layouts/Layout.astro';
 		flex-wrap: wrap;
 		align-items: flex-end;
 		gap: 0.75rem;
-		border-top: 1px dashed rgba(242, 233, 216, 0.3);
+		border-top: 1px dashed rgba(22, 18, 19, 0.3);
 		padding-top: 0.75rem;
 	}
 
@@ -261,8 +377,8 @@ import Layout from '../layouts/Layout.astro';
 
 	.remove-guest {
 		background: transparent;
-		border: 1px solid rgba(242, 233, 216, 0.4);
-		color: #f2e9d8;
+		border: 1px solid var(--red);
+		color: var(--red);
 		border-radius: 6px;
 		cursor: pointer;
 		padding: 0.5rem 0.7rem;
@@ -273,17 +389,19 @@ import Layout from '../layouts/Layout.astro';
 		font-family: inherit;
 		font-size: 1rem;
 		cursor: pointer;
-		border-radius: 8px;
-		border: 1px solid rgba(242, 233, 216, 0.4);
+		border-radius: 4px;
+		border: 1px solid var(--black);
 		padding: 0.6rem 1rem;
 		background: transparent;
-		color: #f2e9d8;
+		color: var(--black);
 	}
 
 	button[type='submit'] {
-		background: #6c4f8c;
-		border-color: #6c4f8c;
+		background: var(--gold);
+		border-color: var(--gold);
+		color: var(--black);
 		font-weight: bold;
+		letter-spacing: 0.03em;
 	}
 
 	button:disabled {
@@ -292,10 +410,42 @@ import Layout from '../layouts/Layout.astro';
 	}
 
 	#form-status.success {
-		color: #b7f5c1;
+		color: #1e6b2e;
 	}
 
 	#form-status.error {
-		color: #f5b7b7;
+		color: var(--red);
+		font-weight: 600;
+	}
+
+	.map-embed {
+		width: 100%;
+		max-width: 32rem;
+		aspect-ratio: 16 / 9;
+		border: 2px solid var(--gold);
+		box-shadow: 0 0 0 1px var(--black);
+		overflow: hidden;
+	}
+
+	.map-embed iframe {
+		width: 100%;
+		height: 100%;
+		border: 0;
+	}
+
+	.map-link {
+		display: inline-block;
+		font-family: inherit;
+		font-weight: 600;
+		color: var(--black);
+		background: var(--gold);
+		text-decoration: none;
+		padding: 0.6rem 1.2rem;
+		border: 1px solid var(--black);
+	}
+
+	.map-link:hover {
+		background: var(--red);
+		color: var(--cream);
 	}
 </style>
