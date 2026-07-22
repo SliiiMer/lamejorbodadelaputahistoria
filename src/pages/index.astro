@@ -11,12 +11,102 @@ import Layout from '../layouts/Layout.astro';
 		<div id="page-content" hidden>
 			<div id="logo" role="img" aria-label="Sello Jen y Cristian"></div>
 
+			<div id="countdown" role="timer" aria-label="Cuenta atrás para la boda">--:--:--:--</div>
+			
+			
+			<section class="section" id="greeting">
+					<div class="section-inner">
+						<h1>¡Nos casamos!</h1>
+
+						<img class="greeting-photo" src="/us.png" alt="Jen y Cristian" />
+
+						<p class="intro">
+							Si has llegado hasta aquí es porque formas parte de nuestra historia, y no podemos imaginarnos dar el "sí, quiero" sin ti.
+							Nos haría muchísima ilusión que nos acompañaras a celebrar uno de los días más felices de nuestra vida.
+						</p>
+
+						<p class="subintro">
+							26 de septiembre de 2026 · Castillo de Guadamur (Toledo)
+						</p>
+
+						<p class="intro">
+							Nos reuniremos a las 18:00* para la ceremonia y, después, seguiremos la celebración con un banquete, muchas risas,
+							alguna que otra lágrima de emoción y una fiesta que durará hasta que el cuerpo aguante.
+							Así que trae tus mejores galas, muchas ganas de pasarlo bien... ¡y prepárate para vivir la mejor boda de la puta historia!
+						</p>
+
+						<p class="intro">
+							Y como una sola fiesta se nos quedaba corta... ¡también hay preboda!
+						</p>
+
+						<p class="subintro">
+							25 de septiembre de 2026 · Ayuntamiento de Illescas (Toledo)
+						</p>
+
+						<p class="intro">
+							A las 12:00 celebraremos nuestro matrimonio civil en Illescas y, después, pondremos rumbo a Guadamur para empezar a calentar motores y
+							celebrarlo con todos los que nos acompañéis desde el primer momento.
+						</p>
+
+						<p class="intro">
+							¡Te esperamos! ❤️
+						</p>
+
+						<p class="footintro">
+							* Apertura de puertas a las 17:30.
+						</p>
+					</div>
+				</section>
+
+				<section class="section" id="dresscode">
+					<div class="section-inner">
+						<h2>Código de vestimenta</h2>
+
+						<p class="intro">
+							Nos casamos en un castillo, así que... ¡animate a venir con estilo medieval!
+						</p>
+
+						<div class="dresscode-options">
+							<div class="dresscode-card dresscode-card--encouraged">
+								<span class="dresscode-icon" aria-hidden="true">🏰</span>
+								<h3>Estilo medieval</h3>
+								<p>Nuestra opción favorita. Túnicas, capas, corsés, doncellas y caballeros... dalo todo y métete en el papel.</p>
+							</div>
+
+							<div class="dresscode-card dresscode-card--accepted">
+								<span class="dresscode-icon" aria-hidden="true">🤵</span>
+								<h3>Traje o vestido largo</h3>
+								<p>Si prefieres lo clásico, un traje o un vestido largo son perfectamente bienvenidos.</p>
+							</div>
+						</div>
+
+						<p class="subintro">
+							Un único ruego: reserva el blanco para la novia.
+						</p>
+					</div>
+				</section>
+
+				<section class="section" id="alojamiento">
+					<div class="section-inner">
+						<h2>Alojamiento y transporte</h2>
+
+						<p class="intro">
+							Para que solo tengas que preocuparte de disfrutar, te aconsejamos quedarte a dormir cerca, en Guadamur y en los pueblos de alrededor hay hoteles y
+							casas rurales para todos los gustos. También hay muchas opciones en Toledo. Escribenos si necesitas una recomendación.
+						</p>
+
+						<p class="intro">
+							El castillo cuenta con zona de parking. Además, ya que la fiesta terminara a las 05:00, desde el castillo se podrán pedir taxis para ir a tu alojamiento.
+						</p>
+					</div>
+				</section>
+
 			<section class="section" id="location">
 				<div class="section-inner">
 					<h2>Cómo llegar</h2>
 
 					<p class="intro">
-						El castillo os espera en Guadamur, Toledo.
+						El castillo te espera en Guadamur (Toledo)
 					</p>
 
 					<div class="map-embed">
@@ -48,6 +138,10 @@ import Layout from '../layouts/Layout.astro';
 						Ayúdanos a preparar el gran banquete. Cuéntanos quién vendrá contigo al castillo.
 					</p>
 
+					<p class="subintro">
+						Fecha límite 31 de agosto
+					</p>
+
 					<form id="rsvp-form">
 						<label>
 							Tu nombre
@@ -61,6 +155,16 @@ import Layout from '../layouts/Layout.astro';
 							</label>
 							<label class="radio">
 								<input type="radio" name="attending" value="false" /> No podré ir
+							</label>
+						</fieldset>
+
+						<fieldset>
+							<legend>¿Asistirás a la preboda?</legend>
+							<label class="radio">
+								<input type="radio" name="preWedding" value="true" required /> Sí, no me la pierdo
+							</label>
+							<label class="radio">
+								<input type="radio" name="preWedding" value="false" /> No podré ir
 							</label>
 						</fieldset>
 
@@ -78,7 +182,7 @@ import Layout from '../layouts/Layout.astro';
 							<textarea
 								name="comments"
 								rows="3"
-								placeholder="Alguna canción que no puede faltar, algo que debamos saber..."
+								placeholder="Algo que debamos saber..."
 							></textarea>
 						</label>
 
@@ -131,6 +235,30 @@ import Layout from '../layouts/Layout.astro';
 		gateMessage.hidden = false;
 	}
 
+	// Countdown to the wedding: 26 September 2026, 18:00 local time.
+	const weddingDate = new Date(2026, 8, 26, 18, 0, 0);
+	const countdownEl = document.querySelector<HTMLDivElement>('#countdown')!;
+
+	function updateCountdown() {
+		const diff = weddingDate.getTime() - Date.now();
+		const clamped = Math.max(diff, 0);
+
+		const days = Math.floor(clamped / 86_400_000);
+		const hours = Math.floor((clamped % 86_400_000) / 3_600_000);
+		const minutes = Math.floor((clamped % 3_600_000) / 60_000);
+		const seconds = Math.floor((clamped % 60_000) / 1000);
+
+		const pad = (n: number) => String(n).padStart(2, '0');
+		countdownEl.textContent = `${pad(days)}:${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+
+		if (diff <= 0) {
+			clearInterval(countdownTimer);
+		}
+	}
+
+	const countdownTimer = setInterval(updateCountdown, 1000);
+	updateCountdown();
+
 	function addGuestRow() {
 		const fragment = guestTemplate.content.cloneNode(true) as DocumentFragment;
 		const row = fragment.querySelector<HTMLDivElement>('.guest-row')!;
@@ -150,6 +278,7 @@ import Layout from '../layouts/Layout.astro';
 		const formData = new FormData(form);
 		const name = String(formData.get('name') ?? '').trim();
 		const attending = formData.get('attending') === 'true';
+		const preWedding = formData.get('preWedding') === 'true';
 		const allergy = String(formData.get('allergy') ?? '').trim();
 		const comments = String(formData.get('comments') ?? '').trim();
 
@@ -163,6 +292,7 @@ import Layout from '../layouts/Layout.astro';
 		const { error } = await supabase.from('rsvps').insert({
 			name,
 			attending,
+			pre_wedding: preWedding,
 			allergy,
 			guests,
 			comments: comments || null,
@@ -260,6 +390,14 @@ import Layout from '../layouts/Layout.astro';
 		mask: url('/logo.svg') no-repeat center / contain;
 	}
 
+	#countdown {
+		font-family: "Old London", "Manufacturing Consent", system-ui;
+		font-size: clamp(2rem, 10vw, 3.5rem);
+		letter-spacing: 0.05em;
+		color: var(--red);
+		font-variant-numeric: tabular-nums;
+	}
+
 	.section {
 		width: 100%;
 		max-width: 38rem;
@@ -281,7 +419,7 @@ import Layout from '../layouts/Layout.astro';
 
 	h1,
 	h2 {
-		font-family: "Manufacturing Consent", system-ui;
+		font-family: "Old London", "Manufacturing Consent", system-ui;
 		font-weight: 400;
 		font-style: normal;
 		margin: 0.25rem 0 0;
@@ -300,7 +438,75 @@ import Layout from '../layouts/Layout.astro';
 	.intro {
 		max-width: 32rem;
 		color: var(--black);
+		font-style: auto;
+	}
+
+	.subintro {
+		color: var(--red);
 		font-style: italic;
+	}
+
+	.greeting-photo {
+		width: 100%;
+		max-width: 22rem;
+		height: auto;
+	}
+
+	.dresscode-options {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 1rem;
+		width: 100%;
+	}
+
+	.dresscode-card {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 1.25rem 1rem;
+		border: 2px solid var(--gold);
+		box-shadow: 0 0 0 1px var(--black);
+		background: rgba(255, 255, 255, 0.6);
+	}
+
+	.dresscode-card--encouraged {
+		border-color: var(--red);
+		background: rgba(122, 18, 32, 0.06);
+	}
+
+	.dresscode-card .dresscode-icon {
+		font-size: 2.5rem;
+		line-height: 1;
+	}
+
+	.dresscode-card h3 {
+		font-family: "Old London", "Manufacturing Consent", system-ui;
+		font-weight: 400;
+		font-size: 1.35rem;
+		letter-spacing: 0.03em;
+		color: var(--red);
+		margin: 0;
+	}
+
+	.dresscode-card p {
+		font-size: 0.9rem;
+		color: var(--black);
+		margin: 0;
+	}
+
+	@media (max-width: 34rem) {
+		.dresscode-options {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	.footintro {
+		max-width: 32rem;
+		color: var(--black);
+		font-size: 0.8rem;
+		font-style: italic;
+		opacity: 0.75;
 	}
 
 	form {

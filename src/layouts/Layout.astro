@@ -19,6 +19,7 @@ const { noindex = false } = Astro.props;
 			href="https://fonts.googleapis.com/css2?family=Manufacturing+Consent&family=Uncial+Antiqua&display=swap"
 			rel="stylesheet"
 		/>
+		<link rel="preload" href="/OldLondon.ttf" as="font" type="font/ttf" crossorigin />
 		<meta name="generator" content={Astro.generator} />
 		{noindex && <meta name="robots" content="noindex, nofollow" />}
 		<title>Jen & Cristian</title>
@@ -28,7 +29,15 @@ const { noindex = false } = Astro.props;
 	</body>
 </html>
 
-<style>
+<style is:global>
+	@font-face {
+		font-family: "Old London";
+		src: url("/OldLondon.ttf") format("truetype");
+		font-weight: 400;
+		font-style: normal;
+		font-display: swap;
+	}
+
 	html,
 	body {
 		margin: 0;

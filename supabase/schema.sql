@@ -11,6 +11,8 @@ create table if not exists public.rsvps (
 	comments text
 );
 
+alter table public.rsvps add column if not exists pre_wedding boolean not null default false;
+
 alter table public.rsvps add column if not exists invite_code text not null default '';
 alter table public.rsvps alter column invite_code drop default;
 
