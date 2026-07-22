@@ -91,13 +91,40 @@ import Layout from '../layouts/Layout.astro';
 						<h2>Alojamiento y transporte</h2>
 
 						<p class="intro">
-							Para que solo tengas que preocuparte de disfrutar, te aconsejamos quedarte a dormir cerca, en Guadamur y en los pueblos de alrededor hay hoteles y
-							casas rurales para todos los gustos. También hay muchas opciones en Toledo. Escribenos si necesitas una recomendación.
+							Queremos que solo tengas que preocuparte de una cosa: disfrutar al máximo.
 						</p>
 
 						<p class="intro">
-							El castillo cuenta con zona de parking. Además, ya que la fiesta terminara a las 05:00, desde el castillo se podrán pedir taxis para ir a tu alojamiento.
+							Por eso, te recomendamos alojarte cerca del lugar de la celebración. En Guadamur y los pueblos 
+							de alrededor encontrarás alojamientos para todos los gustos, y si prefieres,
+							Toledo está a un paso y ofrece un montón de opciones.
 						</p>
+
+
+						<p class="intro">
+							El castillo dispone de aparcamiento gratuito, así que podrás venir cómodamente en tu propio vehículo.
+							En el caso de necesitar taxi para ir o volver a Toledo al finalizar la celebración (sobre las 05:00), 
+							podrás solicitar uno.
+						</p>
+
+						
+						<p class="intro">
+							Si necesitas ayuda para elegir o quieres alguna recomendación, ¡escríbenos! Estaremos encantados de echarte una mano.
+						</p>
+
+						<div class="dresscode-options">
+							<div class="dresscode-card">
+								<span class="dresscode-icon" aria-hidden="true">🤵</span>
+								<h3>Cristian</h3>
+								<p><a class="contact-phone" href="tel:+34689172896">689 172 896</a></p>
+							</div>
+
+							<div class="dresscode-card">
+								<span class="dresscode-icon" aria-hidden="true">👰</span>
+								<h3>Jen</h3>
+								<p><a class="contact-phone" href="tel:+34659553843">659 553 843</a></p>
+							</div>
+						</div>
 					</div>
 				</section>
 
@@ -417,6 +444,10 @@ import Layout from '../layouts/Layout.astro';
 		padding: 1.75rem;
 	}
 
+	.section-inner p {
+		margin: 10px;
+	}
+
 	h1,
 	h2 {
 		font-family: "Old London", "Manufacturing Consent", system-ui;
@@ -444,6 +475,7 @@ import Layout from '../layouts/Layout.astro';
 	.subintro {
 		color: var(--red);
 		font-style: italic;
+		font-weight: bold;
 	}
 
 	.greeting-photo {
@@ -493,6 +525,18 @@ import Layout from '../layouts/Layout.astro';
 		font-size: 0.9rem;
 		color: var(--black);
 		margin: 0;
+	}
+
+	.contact-phone {
+		font-family: "Manufacturing Consent", system-ui;
+		font-size: 1.25rem;
+		letter-spacing: 0.03em;
+		color: var(--red);
+		text-decoration: none;
+	}
+
+	.contact-phone:hover {
+		text-decoration: underline;
 	}
 
 	@media (max-width: 34rem) {

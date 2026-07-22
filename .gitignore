@@ -26,3 +26,6 @@ invite-qr.svg
 
 # jetbrains setting folder
 .idea/
+
+# Other
+pass.txt
